@@ -438,14 +438,11 @@ pub trait EvalContextExt<'mir, 'tcx: 'mir>: crate::MiriEvalContextExt<'mir, 'tcx
     }
 
     /// Helper function used inside the shims of foreign functions to assert that the target OS
-    /// is `target_os`. It panics showing a message with the `name` of the foreign function
+    /// is part of the UNIX family. It panics showing a message with the `name` of the foreign function
     /// if this is not the case.
     fn assert_target_os_is_unix(&self, name: &str) {
         assert!(
-            matches!(
-                self.eval_context_ref().tcx.sess.target.os.as_str(),
-                "linux" | "macos" | "android"
-            ),
+            target_os_is_unix(self.eval_context_ref().tcx.sess.target.os.as_str()),
             "`{}` is only available for supported UNIX family targets",
             name,
         );
@@ -787,4 +784,10 @@ pub fn simd_element_to_bool<'tcx>(elem: ImmTy<'tcx, Tag>) -> InterpResult<'tcx, 
         -1 => true,
         _ => throw_ub_format!("each element of a SIMD mask must be all-0-bits or all-1-bits"),
     })
+}
+
+/// Helper function used inside the shims of foreign functions to check that the `target_os` is
+/// part of the UNIX family.
+pub fn target_os_is_unix(target_os: &str) -> bool {
+    matches!(target_os, "linux" | "macos" | "android")
 }

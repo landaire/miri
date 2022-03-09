@@ -1,6 +1,7 @@
 use rustc_middle::mir;
 use rustc_target::spec::abi::Abi;
 
+use crate::helpers::target_os_is_unix;
 use crate::*;
 use shims::posix::dlsym as posix;
 use shims::windows::dlsym as windows;
@@ -18,7 +19,7 @@ impl Dlsym {
     pub fn from_str(name: &[u8], target_os: &str) -> InterpResult<'static, Option<Dlsym>> {
         let name = &*String::from_utf8_lossy(name);
         Ok(match target_os {
-            "linux" | "macos" | "android" =>
+            target if target_os_is_unix(target) =>
                 posix::Dlsym::from_str(name, target_os)?.map(Dlsym::Posix),
             "windows" => windows::Dlsym::from_str(name)?.map(Dlsym::Windows),
             os => bug!("dlsym not implemented for target_os {}", os),
