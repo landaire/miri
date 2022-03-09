@@ -446,7 +446,7 @@ pub trait EvalContextExt<'mir, 'tcx: 'mir>: crate::MiriEvalContextExt<'mir, 'tcx
                 self.eval_context_ref().tcx.sess.target.os.as_str(),
                 "linux" | "macos" | "android"
             ),
-            "`{}` is only available for the UNIX target family",
+            "`{}` is only available for supported UNIX family targets",
             name,
         );
     }
