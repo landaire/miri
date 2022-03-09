@@ -253,6 +253,23 @@ impl MemoryExtra {
                 this.write_scalar(Scalar::from_u8(0), &place.into())?;
                 Self::add_extern_static(this, "_tls_used", place.ptr);
             }
+            "android" =>
+                for symbol_name in &["signal", "bsd_signal"] {
+                    let layout = this.machine.layouts.usize;
+                    let dlsym = Dlsym::from_str(symbol_name.as_bytes(), &this.tcx.sess.target.os)?
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "hardcoded `extern static` symbol {} has no dlsym handler",
+                                symbol_name
+                            )
+                        });
+                    let (provenance, offset) =
+                        this.memory.create_fn_alloc(FnVal::Other(dlsym)).into_parts();
+                    let ptr = Pointer::new(Some(provenance), offset);
+                    let place = this.allocate(layout, MiriMemoryKind::ExternStatic.into())?;
+                    this.write_pointer(ptr, &place.into())?;
+                    Self::add_extern_static(this, symbol_name, place.ptr);
+                },
             _ => {} // No "extern statics" supported on this target
         }
         Ok(())

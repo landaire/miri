@@ -18,7 +18,8 @@ impl Dlsym {
     pub fn from_str(name: &[u8], target_os: &str) -> InterpResult<'static, Option<Dlsym>> {
         let name = &*String::from_utf8_lossy(name);
         Ok(match target_os {
-            "linux" | "macos" => posix::Dlsym::from_str(name, target_os)?.map(Dlsym::Posix),
+            "linux" | "macos" | "android" =>
+                posix::Dlsym::from_str(name, target_os)?.map(Dlsym::Posix),
             "windows" => windows::Dlsym::from_str(name)?.map(Dlsym::Windows),
             os => bug!("dlsym not implemented for target_os {}", os),
         })

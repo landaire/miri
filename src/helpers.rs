@@ -437,6 +437,20 @@ pub trait EvalContextExt<'mir, 'tcx: 'mir>: crate::MiriEvalContextExt<'mir, 'tcx
         )
     }
 
+    /// Helper function used inside the shims of foreign functions to assert that the target OS
+    /// is `target_os`. It panics showing a message with the `name` of the foreign function
+    /// if this is not the case.
+    fn assert_target_os_is_unix(&self, name: &str) {
+        assert!(
+            matches!(
+                self.eval_context_ref().tcx.sess.target.os.as_str(),
+                "linux" | "macos" | "android"
+            ),
+            "`{}` is only available for the UNIX target family",
+            name,
+        );
+    }
+
     /// Get last error variable as a place, lazily allocating thread-local storage for it if
     /// necessary.
     fn last_error_place(&mut self) -> InterpResult<'tcx, MPlaceTy<'tcx, Tag>> {
