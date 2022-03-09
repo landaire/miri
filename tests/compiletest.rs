@@ -43,6 +43,8 @@ fn run_tests(mode: &str, path: &str, target: &str) {
     config.src_base = PathBuf::from(path);
     config.target = target.to_owned();
     config.target_rustcflags = Some(flags);
+    // Android targets require this to be set so that UI tests don't fail
+    config.adb_device_status = true;
     compiletest::run_tests(&config);
 }
 

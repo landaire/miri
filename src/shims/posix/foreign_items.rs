@@ -166,6 +166,23 @@ pub trait EvalContextExt<'mir, 'tcx: 'mir>: crate::MiriEvalContextExt<'mir, 'tcx
                 }
                 this.write_null(dest)?;
             }
+            "memalign" => {
+                let &[ref align, ref size] = this.check_shim(abi, Abi::C { unwind: false }, link_name, args)?;
+                let align = this.read_scalar(align)?.to_machine_usize(this)?;
+                let size = this.read_scalar(size)?.to_machine_usize(this)?;
+
+                // Align must be power of 2.
+                if !align.is_power_of_two() {
+                    throw_ub_format!("memalign: alignment must be a power of two, but is {}", align);
+                }
+
+                let ptr = this.memory.allocate(
+                    Size::from_bytes(size),
+                    Align::from_bytes(align).unwrap(),
+                    MiriMemoryKind::C.into(),
+                )?;
+                this.write_pointer(ptr, dest)?;
+            }
 
             // Dynamic symbol loading
             "dlsym" => {

@@ -1,5 +1,6 @@
 // ignore-linux: tests Windows-only APIs
 // ignore-macos: tests Windows-only APIs
+// ignore-android: tests Windows-only APIs
 
 use std::os::windows::ffi::{OsStrExt, OsStringExt};
 use std::ffi::{OsStr, OsString};
