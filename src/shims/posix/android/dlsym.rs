@@ -19,6 +19,7 @@ impl Dlsym {
             "getrandom" => None, // std falls back to syscall(SYS_getrandom, ...) when this is NULL.
             "statx" => None,     // std falls back to syscall(SYS_statx, ...) when this is NULL.
             "signal" | "bsd_signal" => Some(Dlsym::signal), // these have the same signature/implementation
+            "android_set_abort_message" => None, // std falls back to just not doing anything when this is NULL.
             _ => throw_unsup_format!("unsupported Android dlsym: {}", name),
         })
     }

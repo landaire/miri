@@ -1,4 +1,5 @@
 // ignore-windows: Concurrency on Windows is not supported yet.
+// ignore-android: `libc` crate does not support `gettimeofday()` on Android
 // compile-flags: -Zmiri-disable-isolation -Zmiri-check-number-validity
 
 use std::sync::mpsc::{channel, sync_channel};

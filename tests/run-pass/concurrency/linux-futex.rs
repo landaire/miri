@@ -2,6 +2,7 @@
 // so we need to ignore Windows and macOS instead.
 // ignore-macos: Uses Linux-only APIs
 // ignore-windows: Uses Linux-only APIs
+// ignore-android: `libc` crate does not support `__errno_location` on Android
 // compile-flags: -Zmiri-disable-isolation
 
 #![feature(rustc_private)]

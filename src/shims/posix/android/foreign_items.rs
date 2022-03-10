@@ -1,6 +1,5 @@
 use rustc_middle::mir;
 use rustc_span::Symbol;
-use rustc_target::abi::{Align, Size};
 use rustc_target::spec::abi::Abi;
 
 use crate::*;

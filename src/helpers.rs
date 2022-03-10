@@ -440,7 +440,7 @@ pub trait EvalContextExt<'mir, 'tcx: 'mir>: crate::MiriEvalContextExt<'mir, 'tcx
     /// Helper function used inside the shims of foreign functions to assert that the target OS
     /// is based on the Linux kernel. It panics showing a message with the `name` of the foreign function
     /// if this is not the case.
-    fn assert_linux_based_target_os(&self, name: &str) {
+    fn assert_target_os_is_linux_based(&self, name: &str) {
         assert!(
             matches!(self.eval_context_ref().tcx.sess.target.os.as_str(), "linux" | "android"),
             "`{}` is only available for supported Linux-based targets",

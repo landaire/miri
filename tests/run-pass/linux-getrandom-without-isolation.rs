@@ -2,6 +2,7 @@
 // so we need to ignore Windows and macOS instead.
 // ignore-macos: Uses Linux-only APIs
 // ignore-windows: Uses Linux-only APIs
+// ignore-android: libc's android target does not support `getrandom()` yet
 // compile-flags: -Zmiri-disable-isolation
 #![feature(rustc_private)]
 extern crate libc;
