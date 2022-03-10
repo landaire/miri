@@ -24,7 +24,7 @@ pub trait EvalContextExt<'mir, 'tcx: 'mir>: crate::MiriEvalContextExt<'mir, 'tcx
 
         match &*link_name.as_str() {
             // errno
-            "__errno_location" => {
+            "__errno" | "__errno_location" => {
                 let &[] = this.check_shim(abi, Abi::C { unwind: false }, link_name, args)?;
                 let errno_place = this.last_error_place()?;
                 this.write_scalar(errno_place.to_ref(this).to_scalar()?, dest)?;
@@ -38,10 +38,34 @@ pub trait EvalContextExt<'mir, 'tcx: 'mir>: crate::MiriEvalContextExt<'mir, 'tcx
                 let result = this.close(fd)?;
                 this.write_scalar(Scalar::from_i32(result), dest)?;
             }
+            "stat" | "$STAT" => {
+                let &[ref path, ref buf] =
+                    this.check_shim(abi, Abi::C { unwind: false }, link_name, args)?;
+                let result = this.linux_stat(path, buf)?;
+                this.write_scalar(Scalar::from_i32(result), dest)?;
+            }
+            "lstat" => {
+                let &[ref path, ref buf] =
+                    this.check_shim(abi, Abi::C { unwind: false }, link_name, args)?;
+                let result = this.linux_lstat(path, buf)?;
+                this.write_scalar(Scalar::from_i32(result), dest)?;
+            }
+            "fstat" => {
+                let &[ref fd, ref buf] =
+                    this.check_shim(abi, Abi::C { unwind: false }, link_name, args)?;
+                let result = this.linux_fstat(fd, buf)?;
+                this.write_scalar(Scalar::from_i32(result), dest)?;
+            }
             "opendir" => {
                 let &[ref name] =
                     this.check_shim(abi, Abi::C { unwind: false }, link_name, args)?;
                 let result = this.opendir(name)?;
+                this.write_scalar(result, dest)?;
+            }
+            "readdir" => {
+                let &[ref dirp] =
+                    this.check_shim(abi, Abi::C { unwind: false }, link_name, args)?;
+                let result = this.linux_readdir(dirp)?;
                 this.write_scalar(result, dest)?;
             }
             "readdir64" => {

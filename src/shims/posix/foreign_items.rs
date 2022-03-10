@@ -60,6 +60,12 @@ pub trait EvalContextExt<'mir, 'tcx: 'mir>: crate::MiriEvalContextExt<'mir, 'tcx
                 let result = this.open(args)?;
                 this.write_scalar(Scalar::from_i32(result), dest)?;
             }
+            "openat" => {
+                // `open` is variadic, the third argument is only present when the second argument has O_CREAT (or on linux O_TMPFILE, but miri doesn't support that) set
+                this.check_abi_and_shim_symbol_clash(abi, Abi::C { unwind: false }, link_name)?;
+                let result = this.openat(args)?;
+                this.write_scalar(Scalar::from_i32(result), dest)?;
+            }
             "fcntl" => {
                 // `fcntl` is variadic. The argument count is checked based on the first argument
                 // in `this.fcntl()`, so we do not use `check_shim` here.

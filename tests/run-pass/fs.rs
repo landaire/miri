@@ -1,5 +1,4 @@
 // ignore-windows: File handling is not implemented yet
-// ignore-android: No foreign function support for __errno yet
 // compile-flags: -Zmiri-disable-isolation
 
 #![feature(rustc_private)]
